@@ -6,7 +6,9 @@
  *   TOMBSTACK_BASE_URL=https://<host> TOMBSTACK_TOKEN=tmb_st_… TOMBSTACK_GAME_ID=<gameId> \
  *     node tools/symbols/symbols.mjs <file> <buildVersion> <moduleName> <debugId> [os]
  *
- *   os: windows | macos | linux | other (default: windows)
+ *   os: windows | macos | linux | android | ios | other (default: windows)
+ *   For a whole Unity/Android symbols.zip, prefer `tombstack-symbols-zip` — it extracts every module
+ *   + debugId server-side (no per-file debugId needed).
  *
  * TOKEN: use a STUDIO key (tmb_st_…, minted on Team ▸ Studio read keys) together with
  * TOMBSTACK_GAME_ID — studio keys carry the `write` scope symbol upload needs and work across every
@@ -36,7 +38,7 @@ if (TOKEN.startsWith("tmb_st_") && !GAME_ID) {
 }
 if (!file || !buildVersion || !moduleName || !debugId) {
   console.error(
-    "usage: tombstack-symbols <file> <buildVersion> <moduleName> <debugId> [windows|macos|linux|other]",
+    "usage: tombstack-symbols <file> <buildVersion> <moduleName> <debugId> [windows|macos|linux|android|ios|other]",
   );
   process.exit(2);
 }
