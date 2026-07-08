@@ -1,6 +1,6 @@
 {
   "name": "@anklebreaker/tombstack-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "CLI tools for Tombstack — offline crash upload (native/custom engines) + CI symbol upload.",
   "bin": {
@@ -8,7 +8,7 @@
     "tombstack-symbols": "symbols/symbols.mjs",
     "tombstack-doctor": "doctor/doctor.mjs"
   },
-  "files": ["uploader/upload.mjs", "symbols/symbols.mjs", "doctor/doctor.mjs", "README.md"],
+  "files": ["uploader/upload.mjs", "symbols/symbols.mjs", "doctor/doctor.mjs", "lib/upload-classify.mjs", "README.md"],
   "keywords": ["tombstack", "crash", "symbols", "upload", "anklebreaker"],
   "author": "AnkleBreaker Studio",
   "license": "MIT",
