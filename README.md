@@ -3,9 +3,9 @@
 - **`uploader/upload.mjs`** — drain a directory of crash JSON sidecars to the ingestion endpoint (offline-first; for native/custom engines). Auth: a **per-game** ingest token (`tmb_…`).
 - **`symbols/symbols.mjs`** — upload a single build symbol file (PDB/dSYM/.sym) to the symbol store from CI, with an explicit `debugId`. Auth: a **studio key** (`tmb_st_…`, write scope) + `TOMBSTACK_GAME_ID` — per-game tokens are ingest-only and can't upload symbols.
 - **`symbols/symbols-zip.mjs`** — upload a whole symbols **archive** (Unity/Android `symbols.zip`); the server unzips it and extracts every module + debugId itself (no per-file metadata). Same studio-key + `TOMBSTACK_GAME_ID` auth. Use this for Android IL2CPP builds.
-- **`doctor/doctor.mjs`** — post a synthetic crash + heartbeat and read it back to confirm an integration end to end.
+- **`doctor/doctor.mjs`** — post a synthetic crash + heartbeat, then read it back, to confirm an integration end to end. Auth: a **per-game** ingest token (`tmb_…`) for the two ingest steps. The read-back step needs a credential that **can read** — a studio key (`tmb_st_…`) plus `TOMBSTACK_GAME_ID`, or a per-game token explicitly granted the `read` scope — supplied as `TOMBSTACK_READ_TOKEN`. Without it that one step is reported as **skipped, not failed**: ingest-only is the default for a per-game token, so its 403 says nothing about the integration.
 
-All read `TOMBSTACK_BASE_URL` + `TOMBSTACK_TOKEN` from the env; `symbols` also reads `TOMBSTACK_GAME_ID`.
+All read `TOMBSTACK_BASE_URL` + `TOMBSTACK_TOKEN` from the env; `symbols` also reads `TOMBSTACK_GAME_ID`; `doctor` optionally reads `TOMBSTACK_READ_TOKEN` (+ `TOMBSTACK_GAME_ID` when that is a studio key).
 
 Run directly with `node` (they have zero dependencies), e.g.:
 
