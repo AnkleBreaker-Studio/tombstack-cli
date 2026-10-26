@@ -1,6 +1,6 @@
 {
   "name": "@anklebreaker/tombstack-cli",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "module",
   "description": "CLI tools for Tombstack — offline crash upload (native/custom engines) + CI symbol upload (per-file or whole-archive).",
   "bin": {

@@ -9,9 +9,13 @@
  *   TOMBSTACK_BASE_URL=https://<host> TOMBSTACK_TOKEN=tmb_st_… TOMBSTACK_GAME_ID=<gameId> \
  *     node tools/symbols/symbols-zip.mjs <archive.zip> [buildVersion]
  *
- * TOKEN must be a STUDIO key (tmb_st_…, Team ▸ Studio read keys) — archive upload needs the `write`
- * scope; per-game ingest tokens 403. buildVersion is an optional label stamped on every extracted
- * module (a Unity symbols.zip carries no app version). Re-uploading the same archive is idempotent.
+ * TOKEN needs `write` (start the upload) and `read` (poll it): either a per-game token minted with
+ * those two scopes on the game's Settings ▸ tokens (locked to that one game, the least-privilege CI
+ * key), or a STUDIO key (tmb_st_…, every game, every scope). A default ingest-only per-game token
+ * gets 403. With a per-game token the server ignores ?gameId=.
+ *
+ * buildVersion is an optional label stamped on every extracted module (a Unity symbols.zip carries
+ * no app version). Re-uploading the same archive is idempotent.
  *
  * Flow: POST /api/v1/symbols/archive?gameId=… → presigned S3 POST → upload the zip → poll
  * /api/v1/symbols/archive/<uploadId> until processed|failed.
@@ -29,7 +33,7 @@ if (!BASE || !TOKEN) {
   process.exit(2);
 }
 if (!GAME_ID) {
-  console.error("set TOMBSTACK_GAME_ID (the archive endpoint is studio-key + game scoped)");
+  console.error("set TOMBSTACK_GAME_ID (the archive endpoint is game scoped)");
   process.exit(2);
 }
 if (!file) {
