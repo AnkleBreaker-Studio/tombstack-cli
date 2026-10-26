@@ -18,7 +18,8 @@
  * no app version). Re-uploading the same archive is idempotent.
  *
  * Flow: POST /api/v1/symbols/archive?gameId=… → presigned S3 POST → upload the zip → poll
- * /api/v1/symbols/archive/<uploadId> until processed|failed.
+ * /api/v1/symbols/archive/<uploadId> until processed|failed. Exits 1 when the upload indexed nothing
+ * (outcome "none-indexed"), printing each skipped file and why; a partial upload exits 0 with a warning.
  */
 import { readFile, stat } from "node:fs/promises";
 import { basename } from "node:path";
@@ -94,7 +95,11 @@ for (;;) {
   const s = (await poll.json())?.data?.status;
   if (s?.status === "processed") {
     console.log(`processed — ${s.symbolCount} module(s) indexed${s.skippedCount ? `, ${s.skippedCount} skipped` : ""}`);
-    process.exit(0);
+    // The server's verdict, not just the counts: an upload that indexed nothing must fail the CI job,
+    // otherwise a build ships with no usable symbols behind a green step.
+    for (const k of s.skipped ?? []) console.error(`  skipped ${k.entryName}: ${k.message}`);
+    if (s.warning) console.error(s.warning);
+    process.exit(s.outcome === "none-indexed" ? 1 : 0);
   }
   if (s?.status === "failed") {
     console.error(`processing failed: ${s.error || "unknown error"}`);
